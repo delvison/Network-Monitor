@@ -1,0 +1,19 @@
+{
+    "name": "node_app",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "dependencies": {
+        "express": "~4.0.0",
+        "mongoose": "~3.6.13",
+        "body-parser": "~1.0.1",
+        "pug": "2.0.0-beta10",
+        "stylus": "^0.49.1",
+        "nib": "^1.0.4"
+    },
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "",
+    "license": "ISC"
+}

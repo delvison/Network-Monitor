@@ -12,6 +12,9 @@ from pprint import pprint
 import argparse
 from scapy.all import *
 import pyttsx
+import requests
+# from urllib.parse import urlencode
+# from urllib.request import Request, urlopen
 # from twilio.rest import TwilioRestClient
 
 OKGREEN = '\033[92m'
@@ -25,9 +28,11 @@ mac_defs = {} #  { "MAC": "device name"}
 black_list = [] # MAC addresses to exclude from monitoring
 disconnect_time = 1800 # time to wait before client is rendered disconnected
 log_file = "unknown_connections.log" # log file for unkown devices
-connected_file = "connected_file.log"
+connected_file = "connected_file.json"
 __checking = False
+__broadcast = True
 _speak = False # flag for speaking when a new device connects
+web_service_url = "http://192.168.1.50/api/whoshome"
 
 def speak(say_this):
   global _speak
@@ -111,8 +116,12 @@ def check_connected(gateway_ip,ip_range):
                print '%s)\t%s\t%s' % (i, device[0], device[1] )
                speak("foreign device detected")
                log_foreign_access(datetime.now().strftime("%Y-%m-%d %H:%M:%S")+" "+device[1])
+               mac_defs[device[1]] = "UNKNOWN_DEVICE"
+               connected[device[1]] = datetime.now()
 
            i+=1
+        if __broadcast:
+           broadcast_connection(device[1], mac_defs[device[1]], connected[device[1]])
     __checking =True
     return __new_connection
 
@@ -120,11 +129,11 @@ def monitor_loop(gateway_ip, ip_range):
     while True:
         try:
             new_connections = check_connected(gateway_ip, ip_range)
-            time.sleep(10)
             new_disconnections = check_for_disconnections()
             # TODO: write to file those devices which are currently connected
             if new_connections or new_disconnections:
                 write_connections()
+            time.sleep(30)
         except KeyboardInterrupt:
             print "shutting down..."
             sys.exit()
@@ -146,7 +155,10 @@ def check_for_disconnections():
             __new_disconnection = True
     for each in to_be_removed:
         connected.pop(each)
+        if __broadcast:
+            broadcast_disconnection(each["MAC"])
         print FAIL+mac_defs[each] +" disconnected "+ENDC
+
     return __new_disconnection
 
 def load_blacklist(filename):
@@ -155,10 +167,34 @@ def load_blacklist(filename):
     the text file should be 1 MAC address per line
     """
     global black_list
+    print "...loading blacklist from "+filename
+    count = 0
     with open(filename) as data_file:
         for each in data_file:
-            black_list.append(each)
+            black_list.append(each.strip())
+            count = count +1
+    print "...loaded "+str(count)+" from "+filename
 
+
+def broadcast_connection(mac, alias, timestamp):
+    try:
+        global web_service_url
+        post_fields = {"mac":mac,"alias":alias,"timestamp":timestamp}
+        requests.post(web_service_url, data=post_fields)
+        # request = Request(web_service_url, urlencode(post_fields).encode())
+        # res = json.loads(urlopen(request).read().decode())
+    except requests.exceptions.ConnectionError:
+        pass
+
+def broadcast_disconnection(mac):
+    try:
+        global web_service_url
+        post_fields = {"mac":mac}
+        requests.delete(web_service_url, data=post_fields)
+        # request = Request(web_service_url+"/"+str(order_id), method='DELETE')
+        # res = json.loads(urlopen(request).read().decode())
+    except requests.exceptions.ConnectionError:
+        pass
 
 # def send_text(msg):
 #     client = TwilioRestClient()
@@ -168,10 +204,16 @@ def load_blacklist(filename):
 
 def write_connections():
     global connected, mac_defs
-    data = ""
+    data = {}
+    data['connections'] = []
     for mac in connected:
-        data = data + mac + ", "+mac_defs[mac] + "\n"
-    write_to_file(connected_file, data, "w")
+        obj = {}
+        obj['MAC'] = mac
+        obj['alias'] = mac_defs[mac]
+        obj['timestamp'] = str(connected[mac])
+        # data = data + mac + ", "+mac_defs[mac]+", " +str(connected[mac])+ "\n"
+        data['connections'].append(obj)
+    write_to_file(connected_file, json.dumps(data, indent=4), "w")
 
 def log_foreign_access(entry):
     """
@@ -185,8 +227,9 @@ def write_to_file(file, data, write_option):
     print "...writing to " + file
     if not os.path.exists(file):
         open(file, 'w').close()
-        with open(file, write_option) as myfile:
-            myfile.write(data+'\n')
+    with open(file, write_option) as myfile:
+        os.chmod(file, 0777)
+        myfile.write(data+'\n')
 
 
 if __name__=="__main__":
