@@ -23,10 +23,11 @@ OKBLUE = '\033[94m'
 connected = {} # { "MAC": "time connected"}
 mac_defs = {} #  { "MAC": "device name"}
 black_list = [] # MAC addresses to exclude from monitoring
-disconnect_time = 900 # time to wait before client is rendered disconnected
+disconnect_time = 1800 # time to wait before client is rendered disconnected
 log_file = "unknown_connections.log" # log file for unkown devices
-checking = False
-_speak = False
+connected_file = "connected_file.log"
+__checking = False
+_speak = False # flag for speaking when a new device connects
 
 def speak(say_this):
   global _speak
@@ -88,7 +89,8 @@ def load_macs(filename):
         mac_defs[each['MAC'].lower()] = each['device']
 
 def check_connected(gateway_ip,ip_range):
-    global mac_defs, connected,checking, black_list
+    global mac_defs, connected,__checking, black_list
+    __new_connection = False
     devices = get_ip_macs(ip_range)
     subprocess.call('clear', shell=True) # clear the shell
     i = 0
@@ -97,8 +99,9 @@ def check_connected(gateway_ip,ip_range):
            if device[1] in mac_defs.keys():
                print '%s)\t%s\t%s\t%s%s' % (i, device[0],device[1],mac_defs[device[1]],ENDC)
                if device[1] not in connected.keys():
+                   __new_connection = True
                    # notify
-                   if checking:
+                   if __checking:
                        print OKGREEN+mac_defs[device[1]] + " just connected!"+ENDC
                        speak(mac_defs[device[1]]+"\" ")
                 # update time stamp
@@ -110,23 +113,29 @@ def check_connected(gateway_ip,ip_range):
                log_foreign_access(datetime.now().strftime("%Y-%m-%d %H:%M:%S")+" "+device[1])
 
            i+=1
-    checking =True
+    __checking =True
+    return __new_connection
 
 def monitor_loop(gateway_ip, ip_range):
     while True:
         try:
-            check_connected(gateway_ip, ip_range)
-            time.sleep(5)
-            check_for_disconnections()
+            new_connections = check_connected(gateway_ip, ip_range)
+            time.sleep(10)
+            new_disconnections = check_for_disconnections()
+            # TODO: write to file those devices which are currently connected
+            if new_connections or new_disconnections:
+                write_connections()
         except KeyboardInterrupt:
             print "shutting down..."
             sys.exit()
 
 def check_for_disconnections():
     """
-    checks for disconnections
+    checks for disconnections. returns a boolean indicating whether a new
+    disconnection has occurred.s
     """
     global connected, mac_defs, disconnect_time
+    __new_disconnection = False
     to_be_removed = []
     for each in connected:
         diff = datetime.now() - connected[each]
@@ -134,9 +143,11 @@ def check_for_disconnections():
         print(OKBLUE +"%20s%20s"+ENDC) % (mac_defs[each], str(diff))
         if diff >= disconnect_time:
             to_be_removed.append(each)
+            __new_disconnection = True
     for each in to_be_removed:
         connected.pop(each)
         print FAIL+mac_defs[each] +" disconnected "+ENDC
+    return __new_disconnection
 
 def load_blacklist(filename):
     """
@@ -155,16 +166,28 @@ def load_blacklist(filename):
 #                        to='+15162590083',
 #                        body=msg)
 
+def write_connections():
+    global connected, mac_defs
+    data = ""
+    for mac in connected:
+        data = data + mac + ", "+mac_defs[mac] + "\n"
+    write_to_file(connected_file, data, "w")
+
 def log_foreign_access(entry):
     """
     logs access from foreign devices to a log file with timestamp and mac address
     """
     global log_file
     # create file if not exists
-    if not os.path.exists(log_file):
-        open(log_file, 'w').close()
-    with open(log_file, "a") as myfile:
-        myfile.write(entry+'\n')
+    write_to_file(log_file, entry, "a")
+
+def write_to_file(file, data, write_option):
+    print "...writing to " + file
+    if not os.path.exists(file):
+        open(file, 'w').close()
+        with open(file, write_option) as myfile:
+            myfile.write(data+'\n')
+
 
 if __name__=="__main__":
     gateway_ip = None
@@ -173,7 +196,7 @@ if __name__=="__main__":
     parser.add_argument("-g", help="specify a gateway. default gateway will be 192.168.1.1") #gateway
     parser.add_argument("-f", help='specify a JSON file with device names and their corresponding MAC addresses. Format should be [{"device": "some device", "MAC":"some mac"}]. default will be mac_addresses.json') #file with mac addresses
     parser.add_argument("-e", help='specify a text file containing MAC addresses to exclude from monitoring. text file must have one MAC address per line. default file will be blacklist.txt') #text file with mac address exclusions
-    parser.add_argument("-t", help="time to wait before a given client is considered disconnected. (seconds)") #time to wait before client is considered discon.
+    # parser.add_argument("-t", help="time to wait before a given client is considered disconnected. (seconds)") #time to wait before client is considered discon.
     args = parser.parse_args()
 
     if args.g is not None:
@@ -187,8 +210,8 @@ if __name__=="__main__":
         load_macs('mac_addresses.json')
     if args.e is not None:
         load_blacklist(args.e)
-    if args.t is not None:
-        global disconnect_time
-        disconnect_time = args.t
+    # if args.t is not None:
+    #     global disconnect_time
+    #     disconnect_time = args.t
 
     monitor_loop(gateway_ip,ip_range)
