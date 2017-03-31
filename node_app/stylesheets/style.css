@@ -30,20 +30,20 @@
   font-size: 14px;
   position: relative;
   top: 18px;
-  left: 20px;
+  margin-left: 20px;
   margin: auto;
 }
 .mac{
   font-size: 9px;
   font-style: italic;
-  left: 69px;
+  margin-left: 65px;
   top: 20px;
   position: relative;
 }
 .timestamp{
   font-size: 9px;
   font-style: italic;
-  left: 25px;
+  margin-left: 22px;
   top: 10px;
   position: relative;
 }
