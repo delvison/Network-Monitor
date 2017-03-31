@@ -4,10 +4,12 @@ div(class="container")
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     title Connected devices
-    link(rel="stylesheet", href="style.css")
+    link(rel="stylesheet", href="stylesheets/style.css")
     link(rel="stylesheet", href="https://bootswatch.com/cosmo/bootstrap.min.css")
-    link(rel="stylesheet", href="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js")
     link(rel="stylesheet", href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js")
+    script(src="http://code.jquery.com/jquery-latest.min.js" type="text/javascript")
+    script(src="/socket.io/socket.io.js")
+    script(src="/scripts/mysocket.js" type="text/javascript")
   body
     div(class="navbar navbar-default navbar-fixed-top")
       div(class="container")
@@ -18,7 +20,7 @@ div(class="container")
         h1 Network
         div(class="container")
           div(class="row-fluid")
-            div(class="col")
+            div(class="col" id="devices")
               each connection in connections
                 div(class=connection['connected'] == "1"? 'device connected' : 'device disconnected')
                   div(class="alias")
@@ -30,11 +32,19 @@ div(class="container")
                   div(class="timestamp")
                     p= connection["timestamp"]
               else
-                No devices connected
+                div(class="col" id="devices_error")
+                  p No devices connected
       div(class="well")
         h1 To-Do
         div(class="container")
           div(class="row-fluid")
             div(class="col")
-              
+              div(class="card")
+                form 
+                  Task: <br>
+                  input(type="text" name="task")
+                  input(type="submit" value="Add")
+                    
+  
+                    
             

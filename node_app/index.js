@@ -5,14 +5,15 @@ var fs = require('fs')
 var app = express();
 var logger = require("morgan")
 var redis = require("redis")
-
+var server = require('http').createServer(app)
+var io = require('socket.io').listen(server)
 
 app.set('view engine', 'pug')
 app.use(bodyParser.urlencoded({
     extended: true
 }));
 app.use(bodyParser.json());
-app.use(express.static(__dirname + '/stylesheets/'));
+app.use(express.static(__dirname + '/public'));
 app.use(logger('dev', {
   stream: fs.createWriteStream('./access.log', {flags: 'a'})
 }))
@@ -21,16 +22,13 @@ app.use(logger('dev', {
 // set up port
 var port = process.env.PORT || 3000;
 
-// get an instance of the express Router
-var router = express.Router();
-
 var redisClient = redis.createClient();
 redisClient.on('connect', function() {
     console.log('Redis server connected')
 })
 
+var router = express.Router();
 router.route('/')
-
 router.route('/whoshome')
 
     // GET all connections (/api/whoshome)
@@ -44,7 +42,7 @@ router.route('/whoshome')
                 multi.hgetall(macs[i]);
             }
             multi.exec(function(err, connections) {
-              console.log(connections);
+              // console.log(connections);
                 res.render('index', {
                     'connections': connections
                 })
@@ -62,11 +60,15 @@ router.route('/whoshome')
             redisClient.sadd('connections', mac, function(err, reply) {
                 if (err) {
                     console.log(err);
-                }
-                if (reply == 0) {
                     res.send("FAILED")
                 } else {
-                    res.send("OK")
+                  res.send("OK")
+                  io.sockets.emit('new connection', {
+                    mac: mac,
+                    timestamp: timestamp,
+                    ip: ip,
+                    alias: alias,
+                    connected: '1'})
                 }
             })
         })
@@ -89,10 +91,11 @@ router.route('/whoshome')
           if (err) {
               console.log(err);
           }
-          if (reply == 0) {
+          if (reply != 0) {
               res.send("FAILED")
           } else {
               res.send("OK")
+              io.sockets.emit('disconnection', {mac: req.body.mac})
           }
         })
     })
@@ -100,11 +103,20 @@ router.route('/whoshome')
 // REGISTER OUR ROUTES. all of our routes will be prefixed with /api
 app.use('/', router);
 
-// checks if json obj is empty
-function isEmpty(obj) {
-    return !Object.keys(obj).length > 0;
-}
+connections = []
+
+io.sockets.on('connection', function(socket){
+  connections.push(socket)
+  console.log('Connected: %s sockets connected', connections.length);
+
+  // disconnect
+  socket.on('disconnect', function(data){
+    connections.splice(connections.indexOf(socket),1)
+    console.log('Disconnected: %s sockets connected', connections.length);
+  })
+})
+
 
 // START THE SERVER
-app.listen(port);
+server.listen(port);
 console.log('Running on port ' + port);
