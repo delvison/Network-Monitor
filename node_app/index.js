@@ -13,6 +13,7 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 app.use(express.static(__dirname + '/stylesheets/'));
+app.use(logger('dev'))
 
 
 // set up port
