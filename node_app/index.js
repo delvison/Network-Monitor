@@ -13,7 +13,9 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 app.use(express.static(__dirname + '/stylesheets/'));
-app.use(logger('dev'))
+app.use(logger('dev', {
+  stream: fs.createWriteStream('./access.log', {flags: 'a'})
+}))
 
 
 // set up port
@@ -59,10 +61,10 @@ router.route('/whoshome')
                 if (err) {
                     console.log(err);
                 }
-                if (reply == 0){
-                  res.send("FAILED")
+                if (reply == 0) {
+                    res.send("FAILED")
                 } else {
-                  res.send("OK")
+                    res.send("OK")
                 }
             })
         })
@@ -75,10 +77,10 @@ router.route('/whoshome')
             if (err) {
                 console.log(err);
             }
-            if (reply == 0){
-              res.send("FAILED")
+            if (reply == 0) {
+                res.send("FAILED")
             } else {
-              res.send("OK")
+                res.send("OK")
             }
         })
     })
