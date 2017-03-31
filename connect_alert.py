@@ -38,7 +38,8 @@ __speak = False  # flag for speaking when a new device connects
 __log_unknown = True  # flag to indicate whether to log unknown devices
 connected_file = "connected_file.json"  # file to log connections
 log_file = "unknown_connections.log"  # log file for unkown devices
-web_service_url = "http://192.168.1.50:3000/whoshome"  # web service url
+# web_service_url = "http://192.168.1.50:3000/whoshome"  # web service url
+web_service_url = "http://127.0.0.1:3000/whoshome"  # web service url
 
 
 def speak(say_this):
@@ -140,7 +141,7 @@ def check_connected(gateway_ip, ip_range):
             i += 1
             if __broadcast:
                 broadcast_connection(device[1], mac_defs[
-                                     device[1]], connected[device[1]])
+                                     device[1]], connected[device[1]], device[0])
     __checking = True
     return __new_connection
 
@@ -200,14 +201,14 @@ def load_blacklist(filename):
             count = count + 1
 
 
-def broadcast_connection(mac, alias, timestamp):
+def broadcast_connection(mac, alias, timestamp, ip):
     """
     sends a http POST request with the MAC address of a newly connected
     device to a specified url
     """
     try:
         global web_service_url
-        post_fields = {"mac": mac, "alias": alias, "timestamp": timestamp}
+        post_fields = {"mac": mac, "alias": alias, "timestamp": timestamp, "ip":ip}
         requests.post(web_service_url, data=post_fields)
         # request = Request(web_service_url, urlencode(post_fields).encode())
         # res = json.loads(urlopen(request).read().decode())

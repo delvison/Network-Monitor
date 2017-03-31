@@ -62,7 +62,7 @@
     "device": "android-7913bd4410e1da22",
     "MAC": "b0:45:19:dd:62:aa"
 }, {
-    "device": "small server",
+    "device": "Home Server",
     "MAC": "00:23:4e:43:14:25"
 }, {
     "device": "router",
@@ -91,4 +91,7 @@
 }, {
     "device": "David's Thinkpad",
     "MAC": "44:6d:57:5d:a9:17"
-  }]
+}, {
+    "device": "Minerva's Kindle",
+    "MAC": "74:75:48:79:30:7a"
+}]

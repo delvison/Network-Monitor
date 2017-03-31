@@ -57,7 +57,8 @@ router.route('/whoshome')
         var mac = req.body.mac
         var alias = req.body.alias
         var timestamp = req.body.timestamp
-        redisClient.hmset(mac, ['MAC',mac,'timestamp', timestamp, 'alias', alias], function(err) {
+        var ip = req.body.ip
+        redisClient.hmset(mac, ['MAC',mac,'timestamp', timestamp, 'alias', alias, 'ip',ip, 'connected','1'], function(err) {
             redisClient.sadd('connections', mac, function(err, reply) {
                 if (err) {
                     console.log(err);
@@ -74,15 +75,25 @@ router.route('/whoshome')
     // DELETE a connection (/api/whoshome)
     .delete(function(req, res) {
         var mac = req.body.mac
-        redisClient.srem('connections', mac, function(err, reply) {
-            if (err) {
-                console.log(err);
-            }
-            if (reply == 0) {
-                res.send("FAILED")
-            } else {
-                res.send("OK")
-            }
+        // redisClient.srem('connections', mac, function(err, reply) {
+        //     if (err) {
+        //         console.log(err);
+        //     }
+        //     if (reply == 0) {
+        //         res.send("FAILED")
+        //     } else {
+        //         res.send("OK")
+        //     }
+        // })
+        redisClient.hset(mac,"connected","0", function(err,reply) {
+          if (err) {
+              console.log(err);
+          }
+          if (reply == 0) {
+              res.send("FAILED")
+          } else {
+              res.send("OK")
+          }
         })
     })
 
