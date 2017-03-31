@@ -245,12 +245,12 @@ def write_connections():
         data = {}
         data['connections'] = []
         for mac in connected:
-            obj = {}
-            obj['MAC'] = mac
-            obj['alias'] = mac_defs[mac]
-            obj['timestamp'] = str(connected[mac])
+            json_obj = {}
+            json_obj['MAC'] = mac
+            json_obj['alias'] = mac_defs[mac]
+            json_obj['timestamp'] = str(connected[mac])
             # data = data + mac + ", "+mac_defs[mac]+", " +str(connected[mac])+ "\n"
-            data['connections'].append(obj)
+            data['connections'].append(json_obj)
         write_to_file(connected_file, json.dumps(data, indent=4), "w")
 
 

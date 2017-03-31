@@ -8,8 +8,8 @@
         "mongoose": "~3.6.13",
         "body-parser": "~1.0.1",
         "pug": "2.0.0-beta10",
-        "stylus": "^0.49.1",
-        "nib": "^1.0.4"
+        "redis": "*",
+        "morgan": "*"
     },
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
