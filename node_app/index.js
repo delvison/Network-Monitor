@@ -44,6 +44,7 @@ router.route('/whoshome')
                 multi.hgetall(macs[i]);
             }
             multi.exec(function(err, connections) {
+              console.log(connections);
                 res.render('index', {
                     'connections': connections
                 })
@@ -56,7 +57,7 @@ router.route('/whoshome')
         var mac = req.body.mac
         var alias = req.body.alias
         var timestamp = req.body.timestamp
-        redisClient.hmset(mac, ['timestamp', timestamp, 'alias', alias], function(err) {
+        redisClient.hmset(mac, ['MAC',mac,'timestamp', timestamp, 'alias', alias], function(err) {
             redisClient.sadd('connections', mac, function(err, reply) {
                 if (err) {
                     console.log(err);
