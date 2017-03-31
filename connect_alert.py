@@ -38,8 +38,8 @@ __speak = False  # flag for speaking when a new device connects
 __log_unknown = True  # flag to indicate whether to log unknown devices
 connected_file = "connected_file.json"  # file to log connections
 log_file = "unknown_connections.log"  # log file for unkown devices
-# web_service_url = "http://192.168.1.50:3000/whoshome"  # web service url
-web_service_url = "http://127.0.0.1:3000/whoshome"  # web service url
+web_service_url = "http://192.168.1.50:3000/whoshome"  # web service url
+# web_service_url = "http://127.0.0.1:3000/whoshome"  # web service url
 
 
 def speak(say_this):
