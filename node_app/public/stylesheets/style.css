@@ -64,3 +64,9 @@
   position: relative;
   float: right;
 }
+.todo-del:checked + span{
+  color: red;
+}
+.tasklist{
+  list-style: none;
+}

@@ -40,11 +40,16 @@ div(class="container")
           div(class="row-fluid")
             div(class="col")
               div(class="card")
-                form 
+                form(method="POST" action="/todo")
                   Task: <br>
                   input(type="text" name="task")
                   input(type="submit" value="Add")
-                    
-  
-                    
-            
+                form(method="get" action="/todo")
+                  ul(class="tasklist")
+                    each todo in todos
+                      li
+                        label
+                          input(type="checkbox" name="task" class="todo-del" value=todo)
+                          span
+                            =todo
+                  input(type="submit" value="remove")
