@@ -7,6 +7,7 @@ var logger = require("morgan")
 var redis = require("redis")
 var server = require('http').createServer(app)
 var io = require('socket.io').listen(server)
+var auth = require(__dirname + '/my_modules/auth.js')
 
 app.set('view engine', 'pug')
 app.use(bodyParser.urlencoded({
@@ -19,6 +20,7 @@ app.use(logger('dev', {
         flags: 'a'
     })
 }))
+app.use(auth)
 
 
 // set up port
@@ -124,7 +126,7 @@ router.route('/todo')
     })
     // DELETE a todo ('/todo')
     .get(function(req, res) {
-        var task = req.body.task
+        var task = req.query.task
         console.log(req.body);
         redisClient.srem('todo', task, function(err, reply) {
             if (err) {
