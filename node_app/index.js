@@ -1,4 +1,4 @@
-var connections_file = "../connected_file.json"
+// var connections_file = "../connected_file.json"
 var bodyParser = require('body-parser');
 var express = require('express')
 var fs = require('fs')
@@ -9,22 +9,21 @@ var server = require('http').createServer(app)
 var io = require('socket.io').listen(server)
 var auth = require(__dirname + '/my_modules/auth.js')
 
+var port = process.env.PORT || 3000;
+
 app.set('view engine', 'pug')
+
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: true
 }));
-app.use(bodyParser.json());
 app.use(express.static(__dirname + '/public'));
 app.use(logger('dev', {
     stream: fs.createWriteStream('./access.log', {
         flags: 'a'
     })
 }))
-app.use(auth)
-
-
-// set up port
-var port = process.env.PORT || 3000;
+// app.use(auth)
 
 var redisClient = redis.createClient();
 redisClient.on('connect', function() {

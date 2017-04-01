@@ -3,7 +3,7 @@ div(class="container")
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    title Connected devices
+    title Network Monitor
     link(rel="stylesheet", href="stylesheets/style.css")
     link(rel="stylesheet", href="https://bootswatch.com/cosmo/bootstrap.min.css")
     link(rel="stylesheet", href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js")
@@ -14,7 +14,7 @@ div(class="container")
     div(class="navbar navbar-default navbar-fixed-top")
       div(class="container")
         div(class="navbar-header")
-          a(href="#" class="navbar-brand") HomeBase
+          a(href="#" class="navbar-brand") Network Monitor
     div(class="page")
       div(class="well")
         h1 Network
@@ -34,22 +34,27 @@ div(class="container")
               else
                 div(class="col" id="devices_error")
                   p No devices connected
+                  
+      //- div(class="well")
+      //-   h1 To-Do
+      //-   div(class="container")
+      //-     div(class="row-fluid")
+      //-       div(class="col")
+      //-         div(class="card")
+      //-           form(method="POST" action="/todo")
+      //-             Task: <br>
+      //-             input(type="text" name="task")
+      //-             input(type="submit" value="Add")
+      //-           form(method="get" action="/todo")
+      //-             ul(class="tasklist")
+      //-               each todo in todos
+      //-                 li
+      //-                   label
+      //-                     input(type="checkbox" name="task" class="todo-del" value=todo)
+      //-                     span
+      //-                       =todo
+      //-             input(type="submit" value="remove")
+      
       div(class="well")
-        h1 To-Do
-        div(class="container")
-          div(class="row-fluid")
-            div(class="col")
-              div(class="card")
-                form(method="POST" action="/todo")
-                  Task: <br>
-                  input(type="text" name="task")
-                  input(type="submit" value="Add")
-                form(method="get" action="/todo")
-                  ul(class="tasklist")
-                    each todo in todos
-                      li
-                        label
-                          input(type="checkbox" name="task" class="todo-del" value=todo)
-                          span
-                            =todo
-                  input(type="submit" value="remove")
+        h1 Log 
+        div(class="log_area")

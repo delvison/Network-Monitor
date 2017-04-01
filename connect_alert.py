@@ -36,10 +36,11 @@ __broadcast = True  # toggle for broadcasting to a web service
 __writing = False  # toggle for writing connections to a file
 __speak = False  # flag for speaking when a new device connects
 __log_unknown = True  # flag to indicate whether to log unknown devices
-connected_file = "connected_file.json"  # file to log connections
-log_file = "unknown_connections.log"  # log file for unkown devices
-web_service_url = "http://192.168.1.50:3000/whoshome"  # web service url
-# web_service_url = "http://127.0.0.1:3000/whoshome"  # web service url
+connected_file = "resources/connected_file.json"  # file to log connections
+log_file = "resources/unknown_connections.log"  # log file for unkown devices
+mac_file = "resources/mac_addresses.json" # file for mac addresses
+# web_service_url = "http://192.168.1.50:3000/whoshome"  # web service url
+web_service_url = "http://127.0.0.1:3000/whoshome"  # web service url
 
 
 def speak(say_this):
@@ -104,11 +105,15 @@ def load_macs(filename):
     """
     Loads devics and their corresponding MAC addresses from a given json file
     """
-    global mac_defs
-    with open(filename) as data_file:
-        data = json.load(data_file)
-    for each in data:
-        mac_defs[each['MAC'].lower()] = each['device']
+    try:
+        global mac_defs
+        with open(filename) as data_file:
+            data = json.load(data_file)
+        for each in data:
+            mac_defs[each['MAC'].lower()] = each['device']
+    except IOError:
+        print filename+" not found."
+        sys.exit(1)
 
 
 def check_connected(gateway_ip, ip_range):
@@ -193,12 +198,16 @@ def load_blacklist(filename):
     loads MAC addresses from a file will be added to the black_list. entries in
     the text file should be 1 MAC address per line
     """
-    global black_list
-    count = 0
-    with open(filename) as data_file:
-        for each in data_file:
-            black_list.append(each.strip())
-            count = count + 1
+    try:
+        global black_list
+        count = 0
+        with open(filename) as data_file:
+            for each in data_file:
+                black_list.append(each.strip())
+                count = count + 1
+    except IOError:
+        print filename+" does not exist."
+        sys.exit(1)
 
 
 def broadcast_connection(mac, alias, timestamp, ip):
@@ -306,7 +315,7 @@ if __name__ == "__main__":
     if args.f is not None:
         load_macs(args.f)
     else:
-        load_macs('mac_addresses.json')
+        load_macs(mac_file)
     if args.e is not None:
         load_blacklist(args.e)
     # if args.t is not None:
