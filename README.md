@@ -9,39 +9,38 @@ I live in a house with a lot of people. I always thought to myself how nice it w
 
 The main python script is called connect_alert.py. It uses ARP to determine who is on the same network. The usage is as follows:
 
-'''
-usage: connect_alert.py [-h] [-g G] [-f F] [-e E]
 
-optional arguments:
-  -h, --help  show this help message and exit
-  -g G        specify a gateway. default gateway will be 192.168.1.1
-  -f F        specify a JSON file with device names and their corresponding
-              MAC addresses. Format should be [{"device": "some device",
-              "MAC":"some mac"}]. default will be mac_addresses.json
-  -e E        specify a text file containing MAC addresses to exclude from
-              monitoring. text file must have one MAC address per line.
-              default file will be blacklist.txt
-'''
+        usage: connect_alert.py [-h] [-g G] [-f F] [-e E]
+
+        optional arguments:
+          -h, --help  show this help message and exit
+          -g G        specify a gateway. default gateway will be 192.168.1.1
+          -f F        specify a JSON file with device names and their corresponding
+                      MAC addresses. Format should be [{"device": "some device",
+                      "MAC":"some mac"}]. default will be mac_addresses.json
+          -e E        specify a text file containing MAC addresses to exclude from
+                      monitoring. text file must have one MAC address per line.
+                      default file will be blacklist.txt
+
 
 #### mac_addresses.json
 Please note that the script will attempt to read a JSON file (mac_addresses.json) that contains the mac addresses and aliases of the devices on your network. It's format should be as follows:
 
-''' json
-[
-  {
-    "device": "Bruce Wayne's Phone",
-    "MAC": "24:DA:9B:5B:74:F0"
-  }, {
-    "device": "Spike Spigel's Phone",
-    "MAC": "00:16:cf:af:75:e8"
-  }
-]
-'''
+
+        [
+          {
+            "device": "Bruce Wayne's Phone",
+            "MAC": "24:DA:9B:5B:74:F0"
+          }, {
+            "device": "Spike Spigel's Phone",
+            "MAC": "00:16:cf:af:75:e8"
+          }
+        ]
+
 
 #### blacklist.txt
 I implemented a blacklist feature to keep from monitoring undesired devices on the network such as a chromecast or router, etc. A blacklist file should be a plain textfile with a MAC address on each line.
 
-'''
-24:DA:9B:5B:74:F0
-00:16:cf:af:75:e8
-'''
+
+        24:DA:9B:5B:74:F0
+        00:16:cf:af:75:e8
