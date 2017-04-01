@@ -49,7 +49,7 @@ def speak(say_this):
     """
     global __speak
     if __speak:
-        os.system('aplay blip.wav -R 1')
+        os.system('aplay resources/blip.wav -R 1')
         speech_engine = pyttsx.init()
         speech_engine.say(say_this)
         speech_engine.runAndWait()
