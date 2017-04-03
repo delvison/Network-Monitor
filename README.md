@@ -5,7 +5,17 @@
 
   ### About
 
-  I live in a house with a lot of people. I always thought to myself how nice it would be to know who is home while I'm at home or away. I thought to myself that a good method of indicating who is home would be checking who's phone is connected to the wifi. To solve this problem I wrote a python script that uses ARP to detect what devices are on the same network. Of course, this first had me map out all of the MAC addresses of the devices in my home to determine what device belongs to what person. At first I made the script play a noise and speak out the name of the device every time a new device would connect to the network. As you can imagine, it did not take long before it proved to be an annoyance. As a result, I thought it more intuitive to build a web application that can simply display to me who is home and who is not. Thus, I built a nodejs application that incorporates an API which the python script can broadcast to. The nodejs application then uses redis to store the information locally. By using websockets between the nodejs server app and the view, i can also live update the page. As a result, I can now leave this page open at all times on my machine and know at any time what devices are connected to the network :)
+Living in a house with a lot of people who are always coming and going has given me the impression that it would be useful to know who is home at any given time. In this modern age, it can be said that the question 'who is home?' is synonymous with the question 'who's mobile device is connected to the home network?'. Rephrasing the question in this manner inspired me to develop this project.
+
+A brief survey of established protocols that can help us to answer this question will quickly yeild ARP (Address Resolution Protocol). ARP is a protocol used by the Internet Protocol (IP) to map IP network addresses to the hardware addresses used by a data link protocol. In summary, using ARP will tell us what devices are on the network and their MAC addresses.
+
+Using this knowledge, I wrote a Python script (check_connections.py) that uses ARP to determine what devices are on my network. Of course, having a MAC address alone will not tell a user what device belongs to whom so I then mapped out MAC addresses with a given alias; such as 11:22:33:44:55:66 belongs to Bob.
+
+At first I made the script play a noise and speak out the name of the device every time a new device would connect to the network. As you can imagine, it did not take long before it proved to be an annoyance. As a result, I thought it more intuitive to build a web application that can simply display to me and other members of my home who is home and who is not. 
+
+Thus, I built a nodejs application that incorporates an API which the python script can broadcast to. The nodejs application then uses redis to store the information locally. By using websockets between the nodejs server app and the view, i can also live update the page. As a result, I can now leave this page open at all times on my machine and know at any time what devices are connected to the network.
+
+The nodejs application is also password protected (via HTTP auth) which allows the user to port forward from their router so that he or she can also check the application when not at home.
 
   ![](./resources/sample.png)
   ### Python Script
