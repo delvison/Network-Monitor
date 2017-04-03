@@ -3,7 +3,7 @@
 var auth = require("basic-auth")
 
 var admins = {
-  'delvison' : { password : 'Castillo1124'}
+  'delvison' : { password : 'password'}
 }
 
 module.exports = function(req, res, next) {

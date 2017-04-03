@@ -173,7 +173,7 @@ def check_for_disconnections():
     checks for disconnections. returns a boolean indicating whether a new
     disconnection has occurred.s
     """
-    global connected, mac_defs, disconnect_time
+    global connected, mac_defs, disconnect_time, __broadcast
     __new_disconnection = False
     to_be_removed = []
     for each in connected:
@@ -186,7 +186,7 @@ def check_for_disconnections():
     for each in to_be_removed:
         t = connected.pop(each)
         if __broadcast:
-            broadcast_disconnection(t)
+            broadcast_disconnection(each)
         print FAIL + mac_defs[each] + " disconnected " + ENDC
 
     return __new_disconnection
