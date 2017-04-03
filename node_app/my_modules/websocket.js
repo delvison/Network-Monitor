@@ -3,7 +3,6 @@
 connections = []
 
 module.exports = function(io) {
-  console.log('hi');
     io.sockets.on('connection', function(socket) {
         connections.push(socket)
         console.log('Connected: %s sockets connected', connections.length);
