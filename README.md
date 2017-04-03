@@ -10,10 +10,10 @@
   ![](./resources/sample.png)
   ### Python Script
 
-  The main python script is called connect_alert.py. It uses ARP to determine who is on the same network. The usage is as follows:
+  The main python script is called check_connections.py. It uses ARP to determine who is on the same network. The usage is as follows:
 
 
-    usage: connect_alert.py [-h] [-g G] [-f F] [-e E]
+    usage: check_connections.py [-h] [-g G] [-f F] [-e E]
 
     optional arguments:
       -h, --help  show this help message and exit
@@ -42,7 +42,7 @@
 
 
   #### blacklist.txt
-  I implemented a blacklist feature to keep from monitoring undesired devices on the network such as a chromecast or router, etc. A blacklist file should be a plain textfile with a MAC address on each line.
+  I implemented a blacklist feature to keep from monitoring undesired devices on the network such as a chromecast or router, etc. A blacklist file should be a plain textfile with a MAC address on each line like so:
 
 
     24:DA:9B:5B:74:F0
