@@ -4,16 +4,17 @@
     "description": "",
     "main": "index.js",
     "dependencies": {
-        "express": "~4.0.0",
-        "body-parser": "~1.0.1",
+        "express": "*",
+        "body-parser": "*",
         "pug": "*",
         "redis": "*",
         "morgan": "*",
-        "socket.io": "*"
+        "socket.io": "*",
+        "basic-auth":"*"
     },
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "start": "node server.js"
+        "start": "npm install && node server.js"
     },
     "author": "delvisoncastillo@gmail.com",
     "license": "ISC"

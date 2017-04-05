@@ -1,0 +1,19 @@
+script:
+  build: ./src
+  volumes:
+    - ./src:/src
+  net: "host" # so that the python script can POST data to localhost on host machine
+
+redis:
+  image: redis
+  ports:
+      - "6379"
+
+mynodeapp:
+    build: ./node_app
+    ports:
+        - "3000:3000"
+    links:
+      - redis
+    volumes:
+        - ./node_app:/src
