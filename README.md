@@ -17,7 +17,7 @@ Thus, I built a nodejs application that incorporates an API which the python scr
 
 The nodejs application is also password protected (via HTTP auth) which allows the user to port forward from their router so that he or she can also check the application when not at home.
 
-  ![](./resources/sample.png)
+  ![](./src/resources/sample.png)
   ### Python Script
 
   The main python script is called check_connections.py. It uses ARP to determine who is on the same network. The usage is as follows:
@@ -57,3 +57,8 @@ The nodejs application is also password protected (via HTTP auth) which allows t
 
     24:DA:9B:5B:74:F0
     00:16:cf:af:75:e8
+    
+### Executing
+The entire application can be executed with docker-compose and will run on localhost:3000. The docker-compose command to build and run the application is as follows:
+
+        docker-compose run --build
