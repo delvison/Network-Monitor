@@ -61,4 +61,4 @@ The nodejs application is also password protected (via HTTP auth) which allows t
 ### Executing
 The entire application can be executed with docker-compose and will run on localhost:3000. The docker-compose command to build and run the application is as follows:
 
-        docker-compose run --build
+    docker-compose up --build
