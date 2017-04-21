@@ -1,9 +1,14 @@
-FROM ubuntu:14.04
+FROM node:boron
 MAINTAINER Delvison Castillo (delvisoncastillo@gmail.com)
-RUN apt-get -y update
-RUN apt-get -y install nodejs-legacy
-RUN apt-get -y install npm
-WORKDIR /src
+
+RUN mkdir -p /usr/src/app
+WORKDIR /usr/src/app
+
+COPY package.json /usr/src/app
+RUN npm install
+
+COPY . /usr/src/app 
+
 EXPOSE 3000
 CMD [ "npm","start"]
 

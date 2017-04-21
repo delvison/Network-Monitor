@@ -15,5 +15,3 @@ mynodeapp:
         - "3000:3000"
     links:
       - redis
-    volumes:
-        - ./node_app:/src

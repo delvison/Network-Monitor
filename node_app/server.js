@@ -1,36 +1,32 @@
 // server.js
 
 // dependencies
-var bodyParser = require('body-parser');
-var express = require('express')
-var fs = require('fs')
-var logger = require("morgan")
-var redis = require("redis")
-var app = express();
-var server = require('http').createServer(app)
+let bodyParser = require('body-parser');
+let express = require('express');
+let fs = require('fs');
+let logger = require("morgan");
+let redis = require("redis");
+let app = express();
+let server = require('http').createServer(app);
 
 // websocket
-var WebSocket = require('./my_modules/websocket')
-var io = require('socket.io').listen(server);
+let WebSocket = require('./my_modules/websocket');
+let io = require('socket.io').listen(server);
 io = new WebSocket(io);
 
 
 // http authentication
-var auth = require("basic-auth")
-var admins = {
-    'admin': {
-        password: 'password'
-    }
-}
+let auth = require("basic-auth");
+let admins = { // define admins here
+    'admin': { password: 'password' }
+};
 
 // view engine
-app.set('view engine', 'pug')
+app.set('view engine', 'pug');
 
 // body parser
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({
-    extended: true
-}));
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // public folder
 app.use(express.static(__dirname + '/public'));
@@ -40,39 +36,41 @@ app.use(logger('dev', {
     stream: fs.createWriteStream('./access.log', {
         flags: 'a'
     })
-}))
+}));
 
-// redis
-var redisClient = redis.createClient('6379', 'redis');
-redisClient.on('connect', function() {
-    console.log('Redis server connected')
-})
+// redis (for docker: ('6379', 'redis') )
+let redisClient = redis.createClient('6379', 'redis');
+redisClient.on('connect', function() { console.log('Redis server connected'); });
 redisClient.on("error", function(err) {
     console.error("Error connecting to redis", err);
     process.exit(1);
 });
 
-// API's
-ApiConnections = require('./routes/api_connections')
+// API handlers 
+let ConnectionHandler = require('./routes/ConnectionHandler.js');
+		ConnectionHandler = new ConnectionHandler(redisClient, io);
+let handlers = {
+	connections: ConnectionHandler
+};
 
-// register API routes
-app.use('/api', ApiConnections.connections_router(redisClient, io));
+// ROUTES
+let routes = require('./routes/routes.js');
+routes.init_routes(app, handlers);
 
 // index page
 app.get('/', function(req, res) {
-    var user = auth(req)
+    let user = auth(req);
     if (!user || !admins[user.name] || admins[user.name].password !== user.pass) {
-        res.set('WWW-Authenticate', 'Basic realm=Network Monitor')
+        res.set('WWW-Authenticate', 'Basic realm=Network Monitor');
         return res.status(401).send();
     } else {
-        ApiConnections.get_connections(redisClient, function(err, connections) {
+        ConnectionHandler.get_connections(redisClient, function(err, connections) {
             res.render('index', {
                 connections: connections
-            })
-
-        })
+            });
+        });
     }
-})
+});
 
 // START THE SERVER
 server.listen(3000);
