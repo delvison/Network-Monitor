@@ -18,9 +18,9 @@ Thus, I built a nodejs application that incorporates an API which the python scr
 The nodejs application is also password protected (via HTTP auth) which allows the user to port forward from their router so that he or she can also check the application when not at home.
 
   ![](./src/resources/sample.png)
-  ### Python Script
+  ### Python Script (src/check_connections.py)
 
-  The main python script is called check_connections.py. It uses ARP to determine who is on the same network. The usage is as follows:
+The main python script is called check_connections.py. It uses ARP to determine who is on the same network. The usage is as follows:
 
 
     usage: check_connections.py [-h] [-g G] [-f F] [-e E]
@@ -35,9 +35,23 @@ The nodejs application is also password protected (via HTTP auth) which allows t
                   monitoring. text file must have one MAC address per line.
                   default file will be blacklist.txt
 
+It can be customized via the global variables found towards the top of the script:
 
-  #### mac_addresses.json
-  Please note that the script will attempt to read a JSON file (mac_addresses.json) that contains the mac addresses and aliases of the devices on your network. It's format should be as follows:
+    loop_seconds = 30  # seconds to wait in between each monitor loop
+    disconnect_time = 1800  # time to wait before client is rendered disconnected
+    __checking = False  # flag that indicates whether or not to notice new connections
+    __broadcast = True  # toggle for broadcasting to a web service
+    __writing = False  # toggle for writing connections to a file
+    __speak = False  # flag for speaking when a new device connects
+    __log_unknown = True  # flag to indicate whether to log unknown devices
+    __printing = False # flag to indicate if script prints output
+    connected_file = "resources/connected_file.json"  # file to log connections
+    log_file = "/src/resources/unknown_connections.log"  # log file for unkown devices
+    mac_file = "resources/mac_addresses.json" # file for mac addresses
+    web_service_url = "http://127.0.0.1:3000/api/connections"  # web service url
+
+  #### Mapping MAC addresses (src/resources/mac_addresses.json)
+Please note that the script will attempt to read a JSON file (mac_addresses.json) that contains the mac addresses and aliases of the devices on your network. It's format should be as follows:
 
 
     [
@@ -51,12 +65,21 @@ The nodejs application is also password protected (via HTTP auth) which allows t
     ]
 
 
-  #### blacklist.txt
+  #### Blacklist (src/resources/blacklist.txt)
   I implemented a blacklist feature to keep from monitoring undesired devices on the network such as a chromecast or router, etc. A blacklist file should be a plain textfile with a MAC address on each line like so:
 
 
     24:DA:9B:5B:74:F0
     00:16:cf:af:75:e8
+    
+#### Security (Node application)
+The web application is protected via HTTP auth. One can customize the users with access in node_app/server.js via the admins object:
+
+    // http authentication
+    let auth = require("basic-auth");
+    let admins = { // define admins here
+        'admin': { password: 'password' }
+    };
     
 ### Executing
 The entire application can be executed with docker-compose and will run on localhost:3000. The docker-compose command to build and run the application is as follows:
