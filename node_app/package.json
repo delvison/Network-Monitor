@@ -10,10 +10,11 @@
         "redis": "*",
         "morgan": "*",
         "socket.io": "*",
-        "basic-auth":"*"
+        "basic-auth":"*",
+        "chakram": "^1.5.0"
     },
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
+        "test": "mocha ./test",
         "start": "npm install && node server.js"
     },
     "author": "delvisoncastillo@gmail.com",
